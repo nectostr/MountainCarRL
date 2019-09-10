@@ -9,6 +9,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 
+
 class Memory:
     def __init__(self, capacity):
         self.capacity = capacity
@@ -30,9 +31,7 @@ class Memory:
         return len(self.memory)
 
 
-class MountainCarContinuous:
-
-
+class MountainCar:
 
     def create_new_model(self):
         def init_weights(layer):
@@ -102,7 +101,7 @@ class MountainCarContinuous:
         #     print(new_state)
         target_update = 1000
         batch_size = 128
-        max_steps = 10000
+        max_steps = 100000
         max_epsilon = 0.5
         min_epsilon = 0.1
         memory = Memory(5000)
@@ -141,7 +140,8 @@ class MountainCarContinuous:
         return rewards_by_target_updates
 
 if __name__ == '__main__':
-    MC = MountainCarContinuous()
+    MC = MountainCar()
     res = MC.run()
     plt.plot(res)
+    plt.title("MountainCar-v0")
     plt.show()

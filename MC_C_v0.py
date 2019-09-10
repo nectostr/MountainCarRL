@@ -275,5 +275,6 @@ if __name__ == '__main__':
     MC = MountainCarContinuous()
     res = MC.run()
     plt.plot(res)
+    plt.title("MountainCarContinuous-v0")
     plt.show()
 

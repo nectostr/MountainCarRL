@@ -72,7 +72,6 @@ class Critic(nn.Module):
 
         x = self.relu(self.fc2(x))
         x = self.fc3(x)
-
         return x
 
 
@@ -138,7 +137,7 @@ class DDPG:
 
     def learning(self):
         s1, a1, r1, t1, s2 = self.buffer.sample_batch(self.batch_size)
-        # bool -> int
+
         t1 = (t1 == False) * 1
         s1 = torch.tensor(s1, dtype=torch.float)
         a1 = torch.tensor(a1, dtype=torch.float)
@@ -158,22 +157,18 @@ class DDPG:
         y_expected = r1[:, None] + t1[:, None] * self.config.gamma * target_q
         y_predicted = self.critic.forward(s1, a1)
 
-        # critic gradient
         critic_loss = nn.MSELoss()
         loss_critic = critic_loss(y_predicted, y_expected)
         self.critic_optimizer.zero_grad()
         loss_critic.backward()
         self.critic_optimizer.step()
 
-        # actor gradient
         pred_a = self.actor.forward(s1)
         loss_actor = (-self.critic.forward(s1, pred_a)).mean()
         self.actor_optimizer.zero_grad()
         loss_actor.backward()
         self.actor_optimizer.step()
 
-        # Notice that we only have gradient updates for actor and critic, not target
-        # actor_optimizer.step() and critic_optimizer.step()
 
         soft_update(self.actor_target, self.actor, self.config.tau)
         soft_update(self.critic_target, self.critic, self.config.tau)
@@ -272,12 +267,7 @@ class MountainCarContinuous:
                     break
 
             rewards_by_target_updates.append(reward)
-            # avg_reward = float(np.mean(rewards_by_target_updates[-100:]))
             print(f'Epoch {ep}/{config.episodes}, reward {rewards_by_target_updates[-1]:.4f}')
-            # print('Best 100-episodes average reward', ep, avg_reward)
-            #
-            # print('total step: %5d, episodes %3d, episode_step: %5d, episode_reward: %5f' % (
-            #     total_step, ep, step, reward))
 
         return rewards_by_target_updates
 
